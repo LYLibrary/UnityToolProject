@@ -1,0 +1,61 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public Button _button返回;
+    public Button _button帮助;
+    public Button _button全屏;
+    public Button _button窗口;
+
+    
+    public void _Add返回ButtonEvent(Action btnEvent)
+    {
+        _button返回.onClick.RemoveAllListeners();
+        _button返回.onClick.AddListener(() => { if (btnEvent != null) { btnEvent(); } });
+    }
+    public void _Add帮助ButtonEvent(Action btnEvent)
+    {
+        _button帮助.onClick.RemoveAllListeners();
+        _button帮助.onClick.AddListener(() => { if (btnEvent != null) { btnEvent(); } });
+    }
+
+    public void _Add全屏ButtonEvent(Action btnEvent)
+    {
+        _button全屏.onClick.RemoveAllListeners();
+        _button全屏.onClick.AddListener(() =>
+        {
+            _TabScreenState();
+            if (btnEvent != null) { btnEvent(); }
+        });
+    }
+    public void _Add窗口ButtonEvent(Action btnEvent)
+    {
+        _button窗口.onClick.RemoveAllListeners();
+        _button窗口.onClick.AddListener(() =>
+        {
+            _TabScreenState();
+            if (btnEvent != null) { btnEvent(); }
+        });
+    }
+
+    public void _SetScreenBtnState(bool fullScreen, bool windowScreen)
+    {
+        _button全屏.gameObject.SetActive(fullScreen);
+        _button窗口.gameObject.SetActive(windowScreen);
+    }
+
+    public void _TabScreenState()
+    {
+        _button全屏.gameObject.SetActive(!_button全屏.gameObject.activeSelf);
+        _button窗口.gameObject.SetActive(!_button窗口.gameObject.activeSelf);
+    }
+
+
+}
+
+
+

@@ -1,0 +1,21 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public Button _okButton;
+
+    public void _AddOkButtonEvent(Action okEvent)
+    {
+        _okButton.onClick.RemoveAllListeners();
+        _okButton.onClick.AddListener(() => { if (okEvent != null) { okEvent(); } });
+    }
+
+
+
+}
+
+

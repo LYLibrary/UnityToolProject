@@ -1,0 +1,128 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    /// <summary>
+    /// 打开当前 Canvas 下的所有 Panel 面板
+    /// </summary>
+    public void _OpenPanels()
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            transform.GetChild(i).gameObject.SetActive(true);
+        }
+    }
+    /// <summary>
+    /// 打开当前 Canvas 下的所有 panelsName 面板
+    /// </summary>
+    /// <param name="panelsName"></param>
+    public void _OpenPanels(params string[] panelsName)
+    {
+        for (int i = 0; i < panelsName.Length; i++)
+        {
+            Transform childPanel = transform.Find(panelsName[i]);
+            if (childPanel != null)
+            {
+                childPanel.gameObject.SetActive(true);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 关闭当前 Canvas 下的所有 Panel 面板
+    /// </summary>
+    public void _ClosePanels()
+    {
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            transform.GetChild(i).gameObject.SetActive(false);
+        }
+    }
+    /// <summary>
+    /// 关闭当前 Canvas 下的所有 panelsName 面板
+    /// </summary>
+    /// <param name="panelsName"></param>
+    public void _ClosePanels(params string[] panelsName)
+    {
+        for (int i = 0; i < panelsName.Length; i++)
+        {
+            Transform childPanel = transform.Find(panelsName[i]);
+            if (childPanel != null)
+            {
+                childPanel.gameObject.SetActive(false);
+            }
+        }
+    }
+
+    /// <summary>
+    /// 删除当前 Canvas 下的所有 Panel 面板
+    /// </summary>
+    public void _DelectPanels()
+    {
+        List<Transform> list = new List<Transform>();
+        for (int i = 0; i < transform.childCount; i++)
+        {
+            list.Add(transform.GetChild(i));
+        }
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].gameObject.SetActive(false);
+            Destroy(list[i].gameObject);
+        }
+    }
+    /// <summary>
+    /// 删除当前 Canvas 下的所有 panelsName 面板
+    /// </summary>
+    /// <param name="panelsName"></param>
+    public void _DelectPanels(params string[] panelsName)
+    {
+        List<Transform> list = new List<Transform>();
+        for (int i = 0; i < panelsName.Length; i++)
+        {
+            Transform childPanel = transform.Find(panelsName[i]);
+            if (childPanel != null)
+            {
+                list.Add(childPanel);
+            }
+        }
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].gameObject.SetActive(false);
+            Destroy(list[i].gameObject);
+        }
+    }
+
+    /// <summary>
+    /// 查找当前 Canvas 下的 Panel 面板
+    /// </summary>
+    /// <param name="panelName"></param>
+    /// <returns></returns>
+    public Transform _FindPanel(string panelName)
+    {
+        return transform.Find(panelName);
+    }
+    /// <summary>
+    /// 查找当前 Canvas 下的所有 Panel 面板
+    /// </summary>
+    /// <param name="panelsName"></param>
+    /// <returns></returns>
+    public List<Transform> _FindPanels(params string[] panelsName)
+    {
+        List<Transform> panels = new List<Transform>();
+        for (int i = 0; i < panelsName.Length; i++)
+        {
+            Transform panel = transform.Find(panelsName[i]);
+            if (panel != null)
+            {
+                panels.Add(panel);
+            }
+        }
+        return panels;
+    }
+
+}
+

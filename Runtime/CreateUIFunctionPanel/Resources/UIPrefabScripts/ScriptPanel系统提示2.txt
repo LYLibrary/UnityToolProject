@@ -1,0 +1,38 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public Text _titleText;
+    public Text _contentText;
+    public Button _okButton;
+    public Button _cancelButton;
+
+
+    public void _SetTitle(string title)
+    {
+        _titleText.text = title;
+    }
+
+	public void _SetContent(string msg)
+    {
+        _contentText.text = msg;
+    }
+
+    public void _AddOkButtonEvent(Action okEvent)
+    {
+        _okButton.onClick.RemoveAllListeners();
+        _okButton.onClick.AddListener(() => { if (okEvent != null) { okEvent(); } });
+    }
+
+    public void _AddCancelButtonEvent(Action cancelEvent)
+    {
+        _cancelButton.onClick.RemoveAllListeners();
+        _cancelButton.onClick.AddListener(() => { if (cancelEvent != null) { cancelEvent(); } });
+    }
+
+}
+

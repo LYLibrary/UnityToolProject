@@ -1,0 +1,58 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    [Header("左侧对话界面控件")]
+    public GameObject _leftDialogue;
+    public Image _leftHead;
+    public Text _leftName;
+    public Text _leftContent;
+    public Button _leftOkButton;
+
+    [Header("左侧对话界面控件")]
+    public GameObject _rightDialogue;
+    public Image _rightHead;
+    public Text _rightName;
+    public Text _rightContent;
+    public Button _rightOkButton;
+
+
+    public void _OpenLeft(Sprite head, string name, string content, Action okEvent)
+    {
+        _rightDialogue.SetActive(false);
+        _leftDialogue.SetActive(true);
+        _leftHead.sprite = head;
+        _leftName.text = name;
+        _leftContent.text = content;
+        _leftOkButton.onClick.RemoveAllListeners();
+        _leftOkButton.onClick.AddListener(() => { if (okEvent != null) { okEvent(); } });
+    }
+
+    public void _OpenRight(Sprite head, string name, string content, Action okEvent)
+    {
+        _leftDialogue.SetActive(false);
+        _rightDialogue.SetActive(true);
+        _rightHead.sprite = head;
+        _rightName.text = name;
+        _rightContent.text = content;
+        _rightOkButton.onClick.RemoveAllListeners();
+        _rightOkButton.onClick.AddListener(() => { if (okEvent != null) { okEvent(); } });
+    }
+
+    public void _CloseLeft()
+    {
+        _leftDialogue.SetActive(false);
+    }
+    public void _CloseRight()
+    {
+        _rightDialogue.SetActive(false);
+    }
+
+
+
+}
+

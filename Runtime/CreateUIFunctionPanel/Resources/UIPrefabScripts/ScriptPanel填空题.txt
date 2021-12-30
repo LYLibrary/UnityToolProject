@@ -1,0 +1,30 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public Text _titleText;
+    public InputField _inputContent;
+    public Button _okButton;
+
+    public void _SetTitle(string title)
+    {
+        _titleText.text = title;
+    }
+    public string _GetInputContent()
+    {
+        return _inputContent.text;
+    }
+    public void _AddOkButtonEvent(Action okEvent)
+    {
+        _okButton.onClick.RemoveAllListeners();
+        _okButton.onClick.AddListener(() => { if (okEvent != null) { okEvent(); } });
+    }
+
+
+
+}
+

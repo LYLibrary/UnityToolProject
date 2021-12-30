@@ -1,0 +1,40 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public CircleMenuTe _toolManager;
+    public GameObject _toolPanel;
+    public Button _tabButton;
+
+
+    public void _Create(List<CricleItemData> itemDatas)
+    {
+        List<GameObject> items = _toolManager.CreateItem(itemDatas.Count);
+        for (int i = 0; i < items.Count; i++)
+        {
+            GameObject btnItem = items[i];
+            CricleItemData btnData = itemDatas[i];
+            btnItem.transform.Find("Image/Text").GetComponent<Text>().text = btnData.btnName;
+            Button btnButton = btnItem.transform.Find("Image").GetComponent<Button>();
+            btnButton.onClick.RemoveAllListeners();
+            btnButton.onClick.AddListener(() =>
+            {
+                if (btnData.btnEvent != null) { btnData.btnEvent(); }
+            });
+        }
+    }
+
+    [Serializable]
+    public class CricleItemData
+    {
+        public string btnName;
+        public Action btnEvent;
+    }
+
+}
+
+

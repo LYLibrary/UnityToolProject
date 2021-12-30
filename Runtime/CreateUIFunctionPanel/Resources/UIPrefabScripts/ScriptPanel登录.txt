@@ -1,0 +1,36 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public InputField _accountInput;
+    public InputField _passwordInput;
+    public Text _errorText;
+    public Button _okButton;
+
+    public void _SetErrorPanel(bool active)
+    {
+        _errorText.gameObject.SetActive(active);
+    }
+    public void _SetError(string error)
+    {
+        _errorText.text = error;
+    }
+    public void _AddOkButtonEvent(Action<string, string> okEvent)
+    {
+        _okButton.onClick.RemoveAllListeners();
+        _okButton.onClick.AddListener(() =>
+        {
+            if (okEvent != null)
+            {
+                okEvent(_accountInput.text, _passwordInput.text);
+            }
+        });
+    }
+
+
+}
+

@@ -1,0 +1,105 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public Image _fadePanel;
+    public Text _tipText;
+
+    private bool enableFadeState = false;
+    private float speed = 1;
+    private float targetValue;
+    private Action finishEvent;
+
+    public void _SetTip(string tip)
+    {
+        _tipText.text = tip;
+    }
+
+    /// <summary>
+    /// 设置颜色（支持淡入淡出时设置）
+    /// </summary>
+    /// <param name="color"></param>
+    public void _SetColor(Color color)
+    {
+        color.a = _fadePanel.color.a;
+        _fadePanel.color = color;
+    }
+
+    /// <summary>
+    /// 由正常变黑
+    /// </summary>
+    public void _SetIn()
+    {
+        enableFadeState = false;
+        Color tempColor = _fadePanel.color;
+        tempColor.a = 1;
+        _fadePanel.color = tempColor;
+    }
+    /// <summary>
+    /// 由黑变正常
+    /// </summary>
+    public void _SetOut()
+    {
+        enableFadeState = false;
+        Color tempColor = _fadePanel.color;
+        tempColor.a = 0;
+        _fadePanel.color = tempColor;
+    }
+
+    /// <summary>
+    /// 黑屏淡入（屏幕逐渐由正常变黑）
+    /// </summary>
+    /// <param name="finish"></param>
+    /// <param name="speed"></param>
+    public void _FadeIn(Action finish, float speed = 1)
+    {
+        this.speed = speed;
+        finishEvent = finish;
+        Color tempColor = _fadePanel.color;
+        tempColor.a = 0;
+        _fadePanel.color = tempColor;
+        targetValue = 1;
+        enableFadeState = true;
+    }
+    /// <summary>
+    /// 黑屏淡出（屏幕逐渐由黑变正常）
+    /// </summary>
+    /// <param name="finish"></param>
+    /// <param name="speed"></param>
+    public void _FadeOut(Action finish, float speed = 1)
+    {
+        this.speed = speed;
+        finishEvent = finish;
+        Color tempColor = _fadePanel.color;
+        tempColor.a = 1;
+        _fadePanel.color = tempColor;
+        targetValue = 0;
+        enableFadeState = true;
+    }
+
+
+    private void Update()
+    {
+        if (enableFadeState)
+        {
+            Color tempColor = _fadePanel.color;
+            tempColor.a = Mathf.MoveTowards(tempColor.a, targetValue, Time.deltaTime * speed);
+            _fadePanel.color = tempColor;
+
+            if (tempColor.a == targetValue)
+            {
+                enableFadeState = false;
+                tempColor.a = targetValue;
+                _fadePanel.color = tempColor;
+
+                if (finishEvent != null) { finishEvent(); }
+            }
+        }
+    }
+    
+}
+

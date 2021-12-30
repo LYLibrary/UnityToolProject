@@ -1,0 +1,50 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public Text _titleText;
+    public Text _contentText;
+
+    public void _SetTitle(string title)
+    {
+        _titleText.text = title;
+    }
+    public void _Open(string msg)
+    {
+        gameObject.SetActive(true);
+        StopDelayClose();
+        _contentText.text = msg;
+    }
+    public void _Open(string msg, float closeSeconds, Action closeEvent)
+    {
+        gameObject.SetActive(true);
+        _contentText.text = msg;
+        StartDelayClose(closeSeconds, closeEvent);
+    }
+    public void _Close()
+    {
+        StopDelayClose();
+        gameObject.SetActive(false);
+    }
+
+    private void StartDelayClose(float closeSeconds, Action action)
+    {
+        if (_fieldDelayClose != null) { StopCoroutine(_fieldDelayClose); }
+        _fieldDelayClose = IEDelayClose(closeSeconds, action);
+        StartCoroutine(_fieldDelayClose);
+    }
+    private void StopDelayClose() { if (_fieldDelayClose != null) { StopCoroutine(_fieldDelayClose); _fieldDelayClose = null; } }
+    private IEnumerator _fieldDelayClose;
+    private IEnumerator IEDelayClose(float closeSeconds, Action action)
+    {
+        yield return new WaitForSeconds(closeSeconds);
+        if (action != null) { action(); }
+    }
+
+
+}
+

@@ -1,0 +1,90 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.SceneManagement;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public Image _panelBG;
+    public Slider _progressSlider;
+    public Text _progressText;
+
+    public void _SetPanelBG(Sprite bgSprite)
+    {
+        _panelBG.sprite = bgSprite;
+    }
+
+    public void _Load(string sceneName)
+    {
+        StartLoadScene(sceneName, LoadSceneMode.Single, null, null);
+    }
+    public void _Load(string sceneName, Action finish)
+    {
+        StartLoadScene(sceneName, LoadSceneMode.Single, null, finish);
+    }
+    public void _Load(string sceneName, Action<float> loadProgress, Action finish)
+    {
+        StartLoadScene(sceneName, LoadSceneMode.Single, loadProgress, finish);
+    }
+    public void _Load(string sceneName, LoadSceneMode mode)
+    {
+        StartLoadScene(sceneName, mode, null, null);
+    }
+    public void _Load(string sceneName, LoadSceneMode mode, Action finish)
+    {
+        StartLoadScene(sceneName, mode, null, finish);
+    }
+    public void _Load(string sceneName, LoadSceneMode mode, Action<float> loadProgress, Action finish)
+    {
+        StartLoadScene(sceneName, mode, loadProgress, finish);
+    }
+
+    private void StartLoadScene(string sceneName, LoadSceneMode mode, Action<float> loadProgress, Action finish)
+    {
+        if (_fieldLoadScene != null) { StopCoroutine(_fieldLoadScene); }
+        _fieldLoadScene = IELoadScene(sceneName, mode, loadProgress, finish);
+        StartCoroutine(_fieldLoadScene);
+    }
+    private void StopLoadScene() { if (_fieldLoadScene != null) { StopCoroutine(_fieldLoadScene); _fieldLoadScene = null; } }
+    private IEnumerator _fieldLoadScene;
+    private IEnumerator IELoadScene(string sceneName, LoadSceneMode mode, Action<float> loadProgress, Action finish)
+    {
+        AsyncOperation async = SceneManager.LoadSceneAsync(sceneName, mode);
+        async.allowSceneActivation = false;
+        while (true)
+        {
+            if (_progressText != null)
+            {
+                _progressText.text = (((int)(async.progress * 100)) / 100).ToString();
+            }
+            if (_progressSlider != null)
+            {
+                _progressSlider.value = async.progress;
+            }
+
+            if (loadProgress != null)
+            {
+                loadProgress(async.progress);
+            }
+            if (!async.allowSceneActivation && async.progress >= 0.9f)
+            {
+                async.allowSceneActivation = true;
+            }
+
+            if (async.progress == 1)
+            {
+                break;
+            }
+            yield return 0;
+        }
+
+        if (finish != null)
+        {
+            finish();
+        }
+    }
+    
+}
+

@@ -1,0 +1,266 @@
+using System;
+using System.Collections;
+using System.Collections.Generic;
+using UnityEngine;
+using UnityEngine.UI;
+
+public class #ClassName# : #BaseClass#
+{
+    public Text _titleText;
+    public GameObject _questionContent;
+    public GameObject _questionItem;
+    public Button _okButton;
+
+	
+    [SerializeField]
+    private List<QuestionData> questionDatas;
+
+    private List<GameObject> currQuestionItems = new List<GameObject>();
+    public void _Create(List<QuestionData> questionDatas)
+    {
+        this.questionDatas = questionDatas;
+
+        _ClearQuestion();
+        for (int i = 0; i < questionDatas.Count; i++)
+        {
+            QuestionData qData = questionDatas[i];
+            GameObject questionPanel = Instantiate(_questionItem, _questionContent.transform);//整个问题(包括答案列表)的物体（被生成）
+            currQuestionItems.Add(questionPanel);
+            questionPanel.SetActive(true);
+            qData.questionPanel = questionPanel;
+
+            //问题赋值
+            Text questionText = questionPanel.transform.Find("QuestionText").GetComponent<Text>();
+            questionText.text = qData.question;
+
+            //答案列表赋值
+            GameObject AnswerPanel = questionPanel.transform.Find("AnswerPanel").gameObject;
+            GameObject answerItemPrefab = AnswerPanel.transform.Find("AnswerToggleItem").gameObject;//答案的物体（被生成）
+            for (int k = 0; k < qData.answers.Count; k++)
+            {//处理每一个答案的数据和对应功能
+                AnswerData answerData = qData.answers[k];
+                GameObject answerItem = Instantiate(answerItemPrefab, answerItemPrefab.transform.parent);
+                answerItem.SetActive(true);
+
+                Text toggleText = answerItem.transform.Find("Label").GetComponent<Text>();
+                toggleText.text = answerData.answer;
+
+                Toggle toggle = answerItem.GetComponent<Toggle>();
+                toggle.isOn = false;
+                toggle.onValueChanged.AddListener((bool isOn) =>
+                {
+                    answerData.selectState = isOn;
+                    if (answerData.selectEvent != null) { answerData.selectEvent(toggle, isOn); }
+                });
+                answerData.thisToggle = toggle;
+
+                if (answerData.style.enable)
+                {
+                    Image background = answerItem.transform.Find("Background").GetComponent<Image>();
+                    if (background != null)
+                    {
+                        background.sprite = answerData.style.noSelectedStateSprite;
+                    }
+                    Image checkmark = answerItem.transform.Find("Background/Checkmark").GetComponent<Image>();
+                    if (checkmark != null)
+                    {
+                        checkmark.sprite = answerData.style.selectedStateSprite;
+                    }
+                }
+            }
+        }
+    }
+
+    public void _AddOkButtonEvent(Action okEvent)
+    {
+        _okButton.onClick.RemoveAllListeners();
+        _okButton.onClick.AddListener(() => { if (okEvent != null) { okEvent(); } });
+    }
+
+    /// <summary>
+    /// 所有问题是否都选择正确
+    /// </summary>
+    /// <returns></returns>
+    public bool _AllCorrect()
+    {
+        List<QuestionData> temp = questionDatas.FindAll(x => x._SelectResult() == true);
+        if (temp != null && temp.Count == questionDatas.Count)
+        {
+            return true;
+        }
+        return false;
+    }
+
+    private void _ClearQuestion()
+    {
+        List<GameObject> list = new List<GameObject>();
+        for (int i = 0; i < currQuestionItems.Count; i++)
+        {
+            list.Add(currQuestionItems[i]);
+        }
+        for (int i = 0; i < list.Count; i++)
+        {
+            list[i].SetActive(false);
+            Destroy(list[i]);
+        }
+        currQuestionItems = new List<GameObject>();
+    }
+
+
+    /// <summary>
+    /// 问题数据类
+    /// </summary>
+    [Serializable]
+    public class QuestionData
+    {
+        /// <summary>
+        /// 此问题的根面板物体
+        /// </summary>
+        public GameObject questionPanel;
+        public string question;
+        /// <summary>
+        /// 答案列表
+        /// </summary>
+        public List<AnswerData> answers = new List<AnswerData>();
+
+        public QuestionData() { }
+        public QuestionData(string question, List<AnswerData> answers)
+        {
+            this.question = question;
+            this.answers = answers;
+        }
+
+        /// <summary>
+        /// 本题的选择结果（正确返回：true、错误返回：false）
+        /// </summary>
+        /// <returns></returns>
+        public bool _SelectResult()
+        {
+            int correctCount = 0;//正确( isCorrect == selectState )的数量
+            for (int i = 0; i < answers.Count; i++)
+            {
+                if (answers[i].isCorrect == answers[i].selectState)
+                {
+                    correctCount++;
+                }
+            }
+            return correctCount == answers.Count ? true : false;
+        }
+
+        /// <summary>
+        /// 查找选择的答案（返回以 ABC 形式的答案）
+        /// </summary>
+        /// <returns></returns>
+        public string _SelectAnswer()
+        {
+            string answerString = "";
+            for (int i = 0; i < answers.Count; i++)
+            {
+                if (answers[i].selectState)
+                {
+                    answerString += Convert.ToChar(65 + i);
+                }
+            }
+            return answerString;
+        }
+        /// <summary>
+        /// 查找选择的答案（返回 答案对应数据 形式的答案）
+        /// </summary>
+        /// <returns></returns>
+        public List<AnswerData> _SelectAnswerList()
+        {
+            return answers.FindAll(x => x.selectState == true);
+        }
+
+    }
+
+    /// <summary>
+    /// 选项的数据类
+    /// </summary>
+    [Serializable]
+    public class AnswerData
+    {
+        public string answer;
+        /// <summary>
+        /// 表示此选项的选择状态（true：选中、false：未选中）
+        /// </summary>
+        public bool selectState;
+        /// <summary>
+        /// 当此选项被选中或者取消选中时执行一次（返回选择后的状态）
+        /// </summary>
+        public Action<Toggle, bool> selectEvent;
+        /// <summary>
+        /// 表示此选项是否是正确答案
+        /// </summary>
+        public bool isCorrect;
+        /// <summary>
+        /// 此选项的物体（Toggle组件）
+        /// </summary>
+        public Toggle thisToggle;
+        /// <summary>
+        /// 此选项的样式
+        /// </summary>
+        public AnswerStyle style;
+
+        public AnswerData() { this.style = new AnswerStyle(); }
+        public AnswerData(string answer, bool isCorrect)
+        {
+            this.answer = answer;
+            this.isCorrect = isCorrect;
+            this.selectEvent = null;
+            this.style = new AnswerStyle();
+        }
+        public AnswerData(string answer, bool isCorrect, Action<Toggle, bool> selectEvent)
+        {
+            this.answer = answer;
+            this.isCorrect = isCorrect;
+            this.selectEvent = selectEvent;
+            this.style = new AnswerStyle();
+        }
+        public AnswerData(string answer, bool isCorrect, AnswerStyle style, Action<Toggle, bool> selectEvent)
+        {
+            this.answer = answer;
+            this.isCorrect = isCorrect;
+            this.selectEvent = selectEvent;
+            this.style = style;
+        }
+        public AnswerData(string answer, bool isCorrect, Sprite noSelectedSprite, Sprite selectedSprite, Action<Toggle, bool> selectEvent)
+        {
+            this.answer = answer;
+            this.isCorrect = isCorrect;
+            this.selectEvent = selectEvent;
+            this.style = new AnswerStyle(noSelectedSprite, selectedSprite);
+        }
+    }
+
+    /// <summary>
+    /// 选项的样式类
+    /// </summary>
+    [Serializable]
+    public class AnswerStyle
+    {
+        /// <summary>
+        /// 是否激活此功能
+        /// </summary>
+        public bool enable = false;
+        /// <summary>
+        /// 未选择状态的图片
+        /// </summary>
+        public Sprite noSelectedStateSprite;
+        /// <summary>
+        /// 选择状态的图片
+        /// </summary>
+        public Sprite selectedStateSprite;
+
+        public AnswerStyle() { enable = false; }
+        public AnswerStyle(Sprite noSelectedStateSprite, Sprite selectedStateSprite)
+        {
+            enable = true;
+            this.noSelectedStateSprite = noSelectedStateSprite;
+            this.selectedStateSprite = selectedStateSprite;
+        }
+
+    }
+
+}
+
