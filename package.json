@@ -1,0 +1,15 @@
+{
+  "name": "com.Ly.LyTool",
+  "version": "1.0.0",
+  "displayName": "LyTool",
+  "description": "这是工具包",
+  "unity": "2019.1",
+ "keywords": [
+    "Tool"
+  ],
+  "author": {
+    "name": "Tool",
+    "url": "https://www.unity3d.com"
+  }
+}
+
